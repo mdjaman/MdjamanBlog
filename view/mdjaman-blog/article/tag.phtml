@@ -1,0 +1,39 @@
+<?php
+$tag = $this->tag;
+$articles = $this->article;
+$title = sprintf('Mots-clés %s', $tag->getName());
+$this->headTitle($title);
+?>
+
+<div class="container-content">
+    <!--<div class="col-md-12 sort-div">
+        <form class="form-inline pull-right" action="<?php echo $this->url('blog') ?>" method="GET" id="form-sort">
+            <div class="form-group">
+                <label for="sort"><?php echo $this->translate('Trier') ?></label>
+                <select name="sort" class="form-control" id="sort">
+                    <option value="title"><?php echo $this->translate('Titre') ?></option>
+                    <option value="created_at"><?php echo $this->translate('Date') ?></option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="dir"><?php echo $this->translate('Ordre') ?></label>
+                <select name="dir" class="form-control" id="dir">
+                    <option value="asc"><?php echo $this->translate('Ascendant') ?></option>
+                    <option value="desc"><?php echo $this->translate('Descendant') ?></option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-default"><?php echo $this->translate('Appliquer') ?></button>
+        </form>
+    </div>-->
+    
+    <div class="p-liste col-sm-12 col-md-12 col-xs-12">
+        <div class="title header-title"><?php echo $title ?></div>
+        <div id="placeholder">
+        <?php echo $this->partial('mdjaman-blog/_partials/paginate/article.phtml', ['article' => $articles]); ?>
+        </div>
+        
+        <div class="col-md-12 col-xs-12 col-sm-12 infinit-loader morebox" id="lastPostsLoader" data-page="article" data-url="<?php echo $this->url('blog/tag', ['alias' => $tag->getAlias()]) ?>">
+            <button class="btn-more"><span><i class="fa fa-plus-square"></i> <?php echo $this->translate('Plus d\'articles') ?></span></button> 
+        </div>
+    </div>
+</div>

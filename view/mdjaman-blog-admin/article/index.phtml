@@ -1,0 +1,354 @@
+<?php
+$articles = $this->article;
+$title = $this->translate('Article');
+$this->headTitle($title);
+
+$this->headLink()->appendStylesheet($this->basePath() . '/bower_components/ckeditor/skins/kama/editor.css');
+$this->inlineScript()->appendFile($this->basePath() . 'bower_components/ckeditor/ckeditor.js');
+$script = <<<SCRIPT
+if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 )
+	CKEDITOR.tools.enableHtml5Elements( document );
+
+// The trick to keep the editor in the sample quite small
+// unless user specified own height.
+CKEDITOR.config.height = 150;
+CKEDITOR.config.width = 'auto';
+
+var initEditor = ( function() {
+var wysiwygareaAvailable = isWysiwygareaAvailable(),
+        isBBCodeBuiltIn = !!CKEDITOR.plugins.get( 'bbcode' );
+
+return function() {
+    var editorElement = CKEDITOR.document.getById( 'content' );
+
+    if (isBBCodeBuiltIn) {
+        editorElement.setHtml('Entrez le texte ici!');
+    }
+
+    // Depending on the wysiwygare plugin availability initialize classic or inline editor.
+    if ( wysiwygareaAvailable ) {
+        CKEDITOR.replace('content');
+    } else {
+        editorElement.setAttribute( 'contenteditable', 'true' );
+        CKEDITOR.inline('content' );
+
+        // TODO we can consider displaying some info box that
+        // without wysiwygarea the classic editor may not work.
+    }
+};
+
+function isWysiwygareaAvailable() {
+    // If in development mode, then the wysiwygarea must be available.
+    // Split REV into two strings so builder does not replace it :D.
+    if ( CKEDITOR.revision == ( '%RE' + 'V%' ) ) {
+        return true;
+    }
+
+    return !!CKEDITOR.plugins.get( 'wysiwygarea' );
+}
+})();
+SCRIPT;
+$this->inlineScript()->appendScript($script);
+?>
+
+<section class="content-header">
+    <div class="btn-group btn-xs pull-right">
+        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <?php echo $this->translate('Nouveau') ?> <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+            <li><a href="#" id="btn-add"><?php echo $this->translate('Simple') ?></a></li>
+            <li><a href="<?php echo $this->url('zfcadmin/blog/article/add') ?>"><?php echo $this->translate('Pus d\'options') ?></a></li>
+        </ul>
+    </div>
+    <h1>
+        <?php echo $title ?>
+        <small></small>
+    </h1>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title"><?php echo $this->translate('Liste des articles') ?></h3>
+                </div>
+                <div class="box-body">
+                    <table id="document-table" class="table table-bordered table-striped">
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--modal bootstrap-->
+<script type="text/html" id="form-template">
+    <form id="form-entity" method="post">
+        <div class="form-group">
+            <label for="title"><?php echo $this->translate('Titre') ?></label>
+            <input name="title" class="form-control" placeholder="<?php echo $this->translate('Titre') ?>" id="title">
+        </div>
+        <div class="form-group">
+            <label for="src"><?php echo $this->translate('Source') ?></label>
+            <input name="src" class="form-control" placeholder="<?php echo $this->translate('Source') ?>" id="src">
+        </div>
+        <div class="form-group">
+            <label for="content"><?php echo $this->translate('Texte') ?></label>
+            <textarea name="content" class="form-control ckeditor" placeholder="<?php echo $this->translate('Texte') ?>" id="content"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="category"><?php echo $this->translate('Catégorie') ?></label>
+            <select name="category" class="form-control chzn-select" id="category" data-url="<?php echo $this->url('zfcadmin/blog/category') ?>"></select>
+        </div>
+        <div class="form-group">
+            <div class="radio">
+                <label>
+                    <input type="radio" name="active" id="active1" value="1" checked>
+                    <?php echo $this->translate('Activer') ?>
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio" name="active" id="active0" value="0">
+                    <?php echo $this->translate('Désactiver') ?>
+                </label>
+            </div>
+        </div>
+
+        <button class="btn btn-primary" type="submit"><?php echo $this->translate('Enregistrer') ?></button>
+    </form>
+</script>
+
+<script type="text/html" id="form-delete-template">
+    <form role="form" id="delete-entity">
+        <?php echo $this->translate('Etes-vous sûr de vouloir supprimer ?') ?>
+        <button type="button" class="btn btn-danger" id="confirmModalYes"><?php echo $this->translate('Oui') ?></button>&nbsp;
+        <button type="button" class="btn btn-primary" id="confirmModalNo"><?php echo $this->translate('Non') ?></button>
+    </form>
+</script>
+
+<script>
+var cols = [{
+    field: 'id', 
+    title: 'Id'
+}, {
+    field: 'title', 
+    title: 'Titre'
+}, {
+    field: 'description',
+    title: 'Description'
+}, {
+    field: 'category',
+    title: 'Catégorie',
+    formatter: categoryFormatter
+}, {
+    field: 'active',
+    title: 'Actif',
+    formatter: booleanFormatter
+}, {
+    field: 'feature',
+    title: 'En avant',
+    formatter: booleanFormatter
+}, {
+    field: 'publishDate',
+    title: 'Date publication',
+    visible: false,
+    formatter: dateFormatter
+}, {
+    field: 'created_at',
+    title: 'Date création'
+}, {
+    field: '',
+    title: '',
+    formatter: articleActionFormatter
+}];
+
+function booleanFormatter(value) {
+    if (value) {
+        return 'oui';
+    }
+    
+    return 'non';
+}
+
+function dateFormatter(value) {
+    if (moment(value, moment.ISO_8601).isValid()) {
+        return moment(value).format('DD-MM-YYYY');
+    }
+    
+    return '_';
+}
+
+function categoryFormatter(value) {
+    if (typeof value === 'object') {
+        return value.name;
+    }
+    return '_';
+}
+
+function articleActionFormatter(value, row) {
+    var rowId = row.id;
+    var alias = row.alias;
+    var articleUrl = '/news/' + alias + '?fromAdmin=1';
+
+    var html = '<div class="dropdown pull-right">' +
+        '<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">' +
+        '<i class="fa fa-list"></i> ' +
+        '<span class="caret"></span>' +
+        '</button>' +
+        '<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">\n' +
+        '<li><a href="' + articleUrl + '" target="_blank">Prévisualiser</a></li>\n' +
+        '</ul>' +
+        '</div>';
+
+    return html;
+}
+
+$(document).ready(function () {
+    var categoryList = [];
+    var $formTpl = $($("#form-template").html());
+    var $categoryElm = $formTpl.find('#category');
+    $.ajax({
+        type: "GET",
+        url: $categoryElm.data('url'),
+        cache: false,
+        success: function (response) {
+            categoryList = response.data;
+        },
+        error: function (response) {
+            utils.launchNotification("Erreur", "Impossible de joindre le serveur", "error");
+        }
+    });
+    
+    var bootstrapTableCls = new MyBootstrapTable($("#document-table"), "<?php echo $this->url("zfcadmin/blog/article"); ?>", cols);
+    bootstrapTableCls.init();
+    
+    $('#btn-add').click(function (e) {
+        e.preventDefault();
+        utils.launchModal($("#form-template").html(), 'Ajouter article');
+        
+        initEditor();
+        var $category = $("#category");
+        $.each(categoryList, function (i, val) {
+            $category.append(
+                $('<option>').text(val.name).val(val.id)
+            );
+        });
+        $category.trigger("chosen:updated");
+        
+        $("#form-entity").attr("action", "<?php echo $this->url("zfcadmin/blog/article/add"); ?>");
+        $("#form-entity").data("method-action", "add");
+    });
+    
+    $(document).on('click', "a#btn-edit", function () {
+        var id = $(this).parents("tr").data("id");
+        var rowData = bootstrapTableCls.getRow(id);
+        
+        utils.launchModal($("#form-template").html(), 'Article "' + rowData.title + '"');
+        initEditor();
+        var $category = $("#category");
+        $.each(categoryList, function (i, val) {
+            $category.append(
+                $('<option>').text(val.name).val(val.id)
+            );
+        });
+        
+        $.each(rowData, function (key, value) {
+            switch (key) {
+                case 'category':
+                    $("#form-entity #" + key).val(value.id);
+                    break;
+                case 'active':
+                    $("#form-entity input[name='" + key + "']").filter(function () {
+                        if ($(this).val() == +value) {
+                            return true;
+                        }
+                        //return $(this).val() === +value;
+                    }).prop("checked", true);
+                    break;
+                default:
+                    $("#form-entity #" + key).val(value);
+            }
+        });
+        
+        $category.trigger("chosen:updated");
+
+        $("#form-entity").attr("action", "<?php echo $this->basePath() . '/admin/blog/article'; ?>/" + id + "/_edit");
+        $("#form-entity").data("method-action", "edit");
+    });
+    
+    $(document).on('click', "a#btn-delete", function () {
+        var id = $(this).parents('tr').data("id");
+        var rowData = bootstrapTableCls.getRow(id);
+
+        utils.launchModal($("#form-delete-template").html(), 'Article "' + rowData.title + '"');
+
+        $("#confirmModalNo").on('click', function () {
+            $('#modal-container').modal("hide");
+        });
+        $("#confirmModalYes").on('click', function (e) {
+            $.ajax({
+                type: "POST",
+                url: "<?php echo $this->basePath() . '/admin/mdjaman-blog/article/'; ?>" + id + "/_delete",
+                cache: false,
+                dataType: "json",
+                data: {
+                    id: id, 
+                    delete: 'yes'
+                },
+                success: function (response) {
+                    if (response.code === 1) {
+                        bootstrapTableCls.removeRow(id);
+                        utils.launchNotification('Suppression', response.msg, 'danger');
+                    }
+                },
+                error: function (error) {
+                    utils.launchNotification("Erreur", "Impossible de supprimer", "error");
+                },
+                beforeSend: function () {
+                    $(".ajax-loader").show();
+                },
+                complete: function () {
+                    $(".ajax-loader").hide();
+                    $('#modal-container').modal("hide");
+                }
+            });
+            e.preventDefault();
+        });
+
+    });
+    
+    $(document).on('submit', '#form-entity', function (e) {
+        var $form = $(this);
+        $.ajax({
+            type: "POST",
+            url: $form.attr("action"),
+            cache: false,
+            dataType: "json",
+            data: $form.serialize(),
+            success: function (response) {
+                var methodAction = $form.data("method-action");
+                if (methodAction === 'add') {
+                    bootstrapTableCls.appendRow(response.data);
+                } else {
+                    bootstrapTableCls.editRow(response.data);
+                }
+                $('#modal-container').modal("hide");
+            },
+            error: function (reponse) {
+                utils.launchNotification("Erreur", "Impossible de joindre le serveur", "error");
+            },
+            beforeSend: function () {
+                $(".ajax-loader").show();
+            },
+            always: function () {
+                $(".ajax-loader").hide();
+            }
+        });
+        
+        e.preventDefault();
+    });
+});
+</script>

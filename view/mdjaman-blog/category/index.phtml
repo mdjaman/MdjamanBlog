@@ -1,0 +1,74 @@
+<?php
+$title = isset($this->title) ? $this->title : $this->translate('Actualités');
+$this->headTitle($title);
+$categories = $this->category;
+?>
+
+<div class="container-content">
+    <div class="p-liste col-sm-12 col-md-12 col-xs-12 actu-canvas news">
+        <div class="title header-title"><?php echo $title ?></div>
+    </div>
+    
+    <?php foreach ($categories as $category) : ?>
+    <div class="col-md-12 custom-container news">
+        <div class="block-interne">
+            <div class="title">
+                <a href="<?php echo $this->url('blog/category', ['alias' => $category->getAlias()]) ?>"><strong><?php echo $category->getName() ?></strong></a>
+                <a href="<?php echo $this->url('blog/category', ['alias' => $category->getAlias()]) ?>" class="more"><?php echo $this->translate('Plus +') ?></a>
+            </div>
+            
+            <?php
+            $articles = $category->getArticles()->slice(0, 4);
+            $first = count($articles) ? array_shift($articles) : null;
+            ?>
+            <?php if ($first) : ?>
+            <?php $picture = ($first->getImg()) ? $first->getImg() : '/img/default.png'; ?>
+            <div class="col-md-7 col-sm-12 col-xs-12 mt20">
+                <div class="col-md-12 col-xs-12 col-sm-12">
+                    <div class="pd5 border-style">
+                        <a href="<?php echo $this->url('blog/view', ['alias' => $first->getAlias()]) ?>">
+                            <img src="<?php echo $this->thumb($picture, '_thumb'); ?>" style="height: 250px" class="img-responsive">
+                        </a>
+                    </div>
+                    <div class="actu-title pt10">
+                        <a href="<?php echo $this->url('blog/view', ['alias' => $first->getAlias()]) ?>"><?php echo $first->getTitle() ?></a>
+                    </div>
+                    <div class="content-actu">
+                        <span class="date-display"><?php echo $this->jqueryTimeAgo($first->getCreatedAt()) ?></span>
+                        <?php echo $first->getDescription() ?>
+                        <a href="<?php echo $this->url('blog/view', ['alias' => $first->getAlias()]) ?>" class="more-block">
+                            <span class="readmore"><?php echo $this->translate('Lire plus') ?></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <?php endif ?>
+
+            <div class="col-md-5 col-sm-12 col-xs-12 mt20">
+                <?php foreach ($articles as $item) : ?>
+                <?php
+                $picture = ($item->getImg()) ? $item->getImg() : '/img/default.png';
+                ?>
+                <div class="border-style mb10 pd5">
+                    <a href="<?php echo $this->url('blog/view', ['alias' => $item->getAlias()]) ?>">
+                        <span class="title-dossier"><?php echo $item->getTitle() ?></span>
+                    </a>
+                    <div class="mt10">
+                        <a href="<?php echo $this->url('blog/view', ['alias' => $item->getAlias()]) ?>">
+                            <img class="img-responsive img-thumbnail img-actu-size" src="<?php echo $this->thumb($picture, '_thumb'); ?>">
+                        </a>
+                    </div>
+                    <div class="content-actu">
+                        <span class="date-display"><?php echo $this->jqueryTimeAgo($item->getCreatedAt()) ?></span>
+                        <?php echo $item->getDescription() ?>
+                        <a href="<?php echo $this->url('blog/view', ['alias' => $item->getAlias()]) ?>" class="more-block">
+                            <span class="readmore"><?php echo $this->translate('Lire plus') ?></span>
+                        </a>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+    <?php endforeach; ?>
+</div>

@@ -1,0 +1,17 @@
+<?php
+$articles = $this->articles;
+?>
+
+<?php foreach ($articles as $item) : ?>
+<?php $picture = ($item->getImg()) ? $item->getImg() : '/img/default.png'; ?>
+<div class="col-md-3 col-sm-6 col-xs-6 other-dossier">
+    <div class="other-dossier-card">
+        <div class="other-dossier-img">
+            <a href="<?php echo $this->url('blog/view', ['alias' => $item->getAlias()]) ?>"><img src="<?php echo $this->thumb($picture, '_mini') ?>" class="img-responsive img-thumbnail"></a>
+        </div>
+        <div class="title-other">
+            <a href="<?php echo $this->url('blog/view', ['alias' => $item->getAlias()]) ?>"><?php echo $item->getTitle() ?></a>
+        </div>
+    </div>
+</div>
+<?php endforeach; 

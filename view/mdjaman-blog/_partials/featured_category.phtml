@@ -1,0 +1,27 @@
+<?php
+$category = $this->category;
+$articles = $this->articles;
+?>
+
+<div class="container-content">
+    <div class="col-md-12 custom-container news">
+        <div class="block-interne">
+            <div class="title">
+                <span><b><?php echo strtoupper($category->getName()) ?></b></span>
+                <span class="more"><a href="<?php echo $this->url('blog/category', ['alias' => $category->getAlias()]) ?>"><?php echo $this->translate('Plus +') ?></a></span>
+            </div>
+            <?php foreach ($articles as $article) : ?>
+            <div class="col-md-3 col-sm-6 col-xs-6 mini-detail">
+                <div class="col-md-12 col-sm-12 col-xs-12 back-style">
+                    <a href="<?php echo $this->url('blog/view', ['alias' => $article->getAlias()]) ?>">
+                        <img src="<?php echo ($article->getImg()) ? $article->getImg() : $this->basePath('img/default_mini.png') ?>" class="img-responsive">
+                    </a>
+                </div>
+                <a href="<?php echo $this->url('blog/view', ['alias' => $article->getAlias()]) ?>" class="mini-title"><?php echo $article->getTitle() ?></a>
+                <span class="mini-text"><?php echo $this->truncate($article->getDescription(), 50) ?></span>
+                <a href="<?php echo $this->url('blog/view', ['alias' => $article->getAlias()]) ?>"><span class="readmore"><?php echo $this->translate('Lire plus') ?></span></a>
+            </div>
+            <?php endforeach ?>
+        </div>
+    </div>
+</div>

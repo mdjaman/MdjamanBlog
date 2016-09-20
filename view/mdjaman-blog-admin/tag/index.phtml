@@ -1,0 +1,160 @@
+<?php
+$categories = $this->tag;
+$title = $this->translate('Mot-clé');
+$this->headTitle($title);
+?>
+
+<section class="content-header">
+    <button class="btn btn-primary btn-xs pull-right" data-toggle="modal" id="btn-add">
+        <i class="fa fa-plus-square"></i>
+    </button>
+    <h1>
+        <?php echo $title ?>
+        <small></small>
+    </h1>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title"><?php echo $this->translate('Liste des mot-clés') ?></h3>
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <table id="document-table" class="table table-bordered table-striped">
+                    </table>
+                </div><!-- /.box-body -->
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--modal bootstrap-->
+<script type="text/html" id="form-template">
+    <form id="form-entity" method="post">
+        <!-- text input -->
+        <div class="form-group">
+            <input name="name" class="form-control" placeholder="<?php echo $this->translate('Nom') ?>" id="name">
+        </div>
+        <button class="btn btn-primary" type="submit"><?php echo $this->translate('Enregistrer') ?></button>
+    </form>
+</script>
+
+<script type="text/html" id="form-delete-template">
+    <form role="form" id="delete-entity">
+        <?php echo $this->translate('Etes-vous sûr de vouloir supprimer ?') ?>
+        <button type="button" class="btn btn-danger" id="confirmModalYes"><?php echo $this->translate('Oui') ?></button>&nbsp;
+        <button type="button" class="btn btn-primary" id="confirmModalNo"><?php echo $this->translate('Non') ?></button>
+    </form>
+</script>
+
+<script>
+var cols = [{
+        field: 'id', 
+        title: 'Id'
+    }, {
+        field: 'name', 
+        title: 'Nom'
+    }, {
+        field: 'created_at',
+        title: 'Date création'
+    }
+];
+
+$(document).ready(function () {
+    var bootstrapTableCls = new MyBootstrapTable($("#document-table"), "<?php echo $this->url("zfcadmin/mdjaman-blog/tag"); ?>", cols);
+    bootstrapTableCls.init();
+    
+    $('#btn-add').click(function (e) {
+        utils.launchModal($("#form-template").html(), 'Ajouter mot-clé');
+        $("#form-entity").attr("action", "<?php echo $this->url("zfcadmin/mdjaman-blog/tag/add"); ?>");
+        $("#form-entity").data("method-action", "add");
+    });
+    
+    $(document).on('click', "a#btn-edit", function () {
+        var id = $(this).parents("tr").data("id");
+        var rowData = bootstrapTableCls.getRow(id);
+        
+        utils.launchModal($("#form-template").html(), 'Mot-clé "' + rowData.name + '"');
+        $.each(rowData, function (key, value) {
+            $("#form-entity #" + key).val(value);
+        });
+
+        $("#form-entity").attr("action", "<?php echo $this->basePath("/admin/mdjaman-blog/tag"); ?>/" + id + "/_edit");
+        $("#form-entity").data("method-action", "edit");
+    });
+    
+    $(document).on('click', "a#btn-delete", function () {
+        var id = $(this).parents('tr').data("id");
+        var rowData = bootstrapTableCls.getRow(id);
+
+        utils.launchModal($("#form-delete-template").html(), 'Catégorie "' + rowData.name + '"');
+
+        $("#confirmModalNo").on('click', function () {
+            $('#modal-container').modal("hide");
+        });
+        $("#confirmModalYes").on('click', function (e) {
+            $.ajax({
+                type: "POST",
+                url: "<?php echo $this->basePath("admin/mdjaman-blog/tag"); ?>/" + id + "/_delete",
+                cache: false,
+                dataType: "json",
+                data: {
+                    id: id, 
+                    delete: 'yes'
+                },
+                success: function (response) {
+                    if (response.code === 1) {
+                        bootstrapTableCls.removeRow(id);
+                        utils.showAlert('Suppression', response.msg, 'danger');
+                    }
+                },
+                error: function (error) {
+                    utils.launchNotification("Erreur", "Impossible de supprimer", "error");
+                },
+                beforeSend: function () {
+                    $(".ajax-loader").show();
+                },
+                complete: function () {
+                    $(".ajax-loader").hide();
+                    $('#modal-container').modal("hide");
+                }
+            });
+            e.preventDefault();
+        });
+
+    });
+    
+    $(document).on('submit', '#form-entity', function (e) {
+        var $form = $(this);
+        $.ajax({
+            type: "POST",
+            url: $form.attr("action"),
+            cache: false,
+            dataType: "json",
+            data: $form.serialize(),
+            success: function (response) {
+                var methodAction = $form.data("method-action");
+                if (methodAction === 'add') {
+                    bootstrapTableCls.appendRow(response.data);
+                } else {
+                    bootstrapTableCls.editRow(response.data);
+                }
+                $('#modal-container').modal("hide");
+            },
+            error: function (reponse) {
+                utils.launchNotification("Erreur", "Impossible de joindre le serveur", "error");
+            },
+            beforeSend: function () {
+                $(".ajax-loader").show();
+            },
+            always: function () {
+                $(".ajax-loader").hide();
+            }
+        });
+        
+        e.preventDefault();
+    });
+});
+</script>

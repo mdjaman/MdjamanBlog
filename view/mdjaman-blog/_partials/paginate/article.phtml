@@ -1,0 +1,42 @@
+<?php 
+$articles = $this->article;
+$IDENTIFIER_PREFIX = 'blog_';
+?>
+<?php foreach ($articles as $item) : ?>
+<?php $pageIdentifier = $IDENTIFIER_PREFIX . $item->getAlias(); ?>
+<div class="col-md-12 col-sm-12 col-xs-12 liste-actu item-seq" data-id="<?php echo $item->getId(); ?>">
+    <div class="col-md-3">
+        <a href="<?php echo $this->url('blog/view', ['alias' => $item->getAlias()]) ?>"><img class="img-responsive img-thumbnail img-actu-size img-actu-height" src="<?php echo ($item->getImg() !== '') ? $item->getImg() : $this->basePath('/img/default_mini.png') ?>"></a>
+    </div>
+    <div class="col-md-9 text-left">
+        <div class="col-md-12 title-actu text-left border-left-style">
+            <a href="<?php echo $this->url('blog/view', ['alias' => $item->getAlias()]) ?>"><?php echo $item->getTitle() ?></a>
+        </div>
+        
+        <?php echo $item->getDescription() ?>
+        <div>
+            <span class="suite pull-right"><a href="<?php echo $this->url('blog/view', ['alias' => $item->getAlias()]) ?>"><?php echo $this->translate('Suite...') ?></a></span>
+        </div>
+        
+        <div class="clearfix"></div>
+
+        <div class="row">
+            <div class="pull-left">
+                <small class="date-actu"><?php echo $this->translate('Publié') ?> <?php echo $this->jqueryTimeAgo($item->getCreatedAt()) ?></small>
+            </div>
+            <div class="pull-left">
+                <?php echo $this->translate('Catégorie') ?>:
+                <a href="<?php echo $this->url('blog/category', ['alias' => $item->getCategory()->getAlias()]) ?>">
+                    <?php echo $item->getCategory()->getName(); ?></a>
+            </div>
+            <div class="pull-left">
+                <i class="fa fa-comment"></i> <?php echo $this->disqus()->commentsCount([
+                    'url' => $this->url('blog/view', ['alias' => $item->getAlias()]),
+                    'id' => $pageIdentifier,
+                ]) ?>
+            </div>
+        </div>
+
+    </div>
+</div>
+<?php endforeach;

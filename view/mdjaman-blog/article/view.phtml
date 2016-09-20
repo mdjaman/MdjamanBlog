@@ -1,0 +1,115 @@
+<?php
+/* @var \MdjamanBlog\Entity\ArticleInterface $article */
+$article = $this->article;
+$title = $article->getTitle() . ' - ' . $this->translate('Article');
+$this->headTitle($title);
+
+$tags = $article->getTags();
+$tagNames = [];
+foreach ($tags as $tag) {
+    array_push($tagNames, $tag->getName());
+}
+
+$category = $article->getCategory();
+
+$url = $this->serverUrl() . $this->url();
+
+$this->headMeta()->appendName('keywords', implode(', ', $tagNames));
+$this->headMeta()->setName('description', $article->getDescription());
+
+$this->openGraph()->setTitle($article->getTitle());
+$this->openGraph()->setDescription($article->getDescription());
+$this->openGraph()->appendImage($article->getImg());
+$this->openGraph()->setLocale('fr', ['FR_fr']);
+$this->openGraph()->setType('article');
+$this->openGraph()->setURL($url);
+
+/* @var \DateTime $publishedDate */
+$publishedDate = ($article->getPublishDate() !== null) ? $article->getPublishDate() : $article->getCreatedAt();
+
+$this->openGraph()->appendArticle([
+    'published_time' => $publishedDate->format(DATE_ISO8601),
+    'modified_time' => $article->getCreatedAt()->format(DATE_ISO8601),
+    'section' => 'News',
+    'tag' => $category->getName(),
+]);
+
+$pageIdentifier = 'blog_' . $article->getAlias();
+?>
+<div class="container-content">
+    <div class="p-liste col-sm-12 col-md-12 col-xs-12 bg-white">
+        <div class="title header-title"><?php echo $article->getTitle() ?></div>
+        <div class="col-md-12 col-sm-12 col-xs-12 news">
+            <div class="flexible-block mt10">
+                <span class="date-display"><?php echo $this->translate('Publié le') ?> <?php echo $publishedDate->format('d-m-Y'); ?> |
+                <?php echo $this->disqus()->commentsCount([
+                    'url' => $this->url('blog/view', ['alias' => $article->getAlias()]),
+                    'id' => $pageIdentifier,
+                ]) ?>
+                </span>
+            </div>
+            <div class="flexible-block mt10">
+            <?php echo $this->addThis([
+                'domain' => 'santefute',
+                'url' => $this->url('blog/view', ['alias' => $article->getAlias()]),
+                'title' => $article->getTitle()
+            ]) ?>
+            </div>
+        </div>
+        
+        <div class="col-md-12 sort-div news">
+            <!--<span class="txt-search padding-title txt-blue"><?php echo $article->getTitle() ?></span>-->
+            <div class="col-md-12 col-sm-12 col-xs-12 ">
+                <img alt="<?php echo $article->getTitle(); ?>" src="<?php echo ($article->getImg()) ? $article->getImg() : '/img/default.png'; ?>" class="img-responsive center-block">
+            </div>
+        </div>
+        <div class="col-md-12 col-sm-12 col-xs-12 news mt10 pr50">
+            <?php echo html_entity_decode($article->getContent()) ?>
+        </div>
+        <div class="col-md-12 col-sm-12 col-xs-12 bg-white">
+            <p><?php echo $this->translate('Catégorie') ?> :
+                <a href="<?php echo $this->url('blog/category', ['alias' => $category->getAlias()]) ?>">
+                    <?php echo $category->getName(); ?></a>
+            </p>
+            <p><?php echo $this->translate('Source') ?>: <span class="news_date_comments"><?php echo $article->getSrc(); ?></span></p>
+            <?php if (count($tags)) : ?>
+            <p>
+            <?php echo $this->translate('Mots clés') ?>: 
+            <?php foreach ($tags as $tag) : ?>
+             <a class="badge" href="<?php echo $this->url('blog/tag', ['alias' => $tag->getAlias()]) ?>"><?php echo $tag->getName() ?></a>
+            <?php endforeach; ?>
+            </p>
+            <?php endif; ?>
+        </div>
+        
+        <div class="col-md-12 col-sm-12 col-xs-12 bg-white">
+            <div id="social_link">
+                <div class="addthis_toolbox addthis_default_style">
+                    <a class="vl addthis_button_tweet" tw:count="vertical"></a>
+                    <a class="vl addthis_button_google_plusone" g:plusone:size="tall"></a>
+                    <a class="addthis_button_facebook_like" fb:like:layout="button_count"
+                       fb:like:action="recommend"></a>
+                    <a class="addthis_button_facebook_send"></a>
+                </div>
+            </div>
+            
+            <div class="row">
+                <h3 class="title"><?php echo $this->translate('Sur le même thème') ?></h3>
+                <?php echo $this->articleRecomendations($article, 'publishDate','desc', 4); ?>
+            </div>
+            
+            <div class="row">
+            <?php echo $this->disqus()->loadThreadComments([
+                'url' => [
+                    'name' => 'blog/view',
+                    'params' => [
+                        'alias' => $article->getAlias(),
+                    ]
+                ],
+                'id' => $pageIdentifier,
+            ]);
+            ?>
+            </div>
+        </div>
+    </div>
+</div>
