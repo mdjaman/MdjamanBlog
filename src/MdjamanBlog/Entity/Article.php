@@ -19,7 +19,7 @@ class Article extends BaseEntity implements ArticleInterface
     /**
      * @var integer $id
      *
-     * @ORM\Column(name="id", type="string", nullable=false, unique=false)
+     * @ORM\Column(name="id", type="integer", nullable=false, unique=false)
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      * @JMS\Groups({"list", "details"})

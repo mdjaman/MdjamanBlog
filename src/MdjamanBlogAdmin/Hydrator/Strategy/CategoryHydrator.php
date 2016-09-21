@@ -25,6 +25,7 @@
 
 namespace MdjamanBlogAdmin\Hydrator\Strategy;
 
+use Doctrine\Common\Persistence\ObjectManager;
 use MdjamanBlog\Entity\CategoryInterface;
 use Zend\Stdlib\Hydrator\Strategy\StrategyInterface;
 

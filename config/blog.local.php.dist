@@ -17,7 +17,7 @@ return array(
         'category_listing_limit' => 20,
         'archive_listing_limit'  => 20,
         'feed_listing_limit'     => 20,
-        'admin_listing_limit'    => 20, 
+        'admin_listing_limit'    => 20,
         'sitemap'               => array(
             'changefreq' => '',
             'priority'   => '',
