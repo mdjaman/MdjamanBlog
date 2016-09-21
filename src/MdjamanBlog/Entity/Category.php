@@ -228,10 +228,10 @@ class Category extends BaseEntity implements CategoryInterface
     /**
      * Add article
      *
-     * @param Article $article
+     * @param ArticleInterface $article
      * @return $this
      */
-    public function addArticles(Article $article)
+    public function addArticles(ArticleInterface $article)
     {
         if (!$this->articles->contains($article)) {
             $this->articles[] = $article;

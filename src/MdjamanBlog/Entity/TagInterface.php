@@ -68,10 +68,10 @@ interface TagInterface
     /**
      * Add article
      *
-     * @param Article $article
+     * @param ArticleInterface $article
      * @return $this
      */
-    public function addArticles(Article $article);
+    public function addArticles(ArticleInterface $article);
 
     /**
      * Get articles

@@ -195,14 +195,14 @@ interface ArticleInterface
     /**
      * Set category
      *
-     * @param Category $category
+     * @param CategoryInterface $category
      */
-    public function setCategory(Category $category);
+    public function setCategory(CategoryInterface $category);
 
     /**
      * Get category
      *
-     * @return Category
+     * @return CategoryInterface
      */
     public function getCategory();
     
