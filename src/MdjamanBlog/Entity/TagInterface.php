@@ -83,5 +83,5 @@ interface TagInterface
     /**
      * @param Collection $articles
      */
-    public function removeArticles(Collection $articles);
+    public function removeArticles(\Doctrine\Common\Collections\Collection $articles);
 }
