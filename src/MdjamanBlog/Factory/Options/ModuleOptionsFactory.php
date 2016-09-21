@@ -25,6 +25,10 @@
 
 namespace MdjamanBlog\Factory\Options;
 
+use MdjamanBlog\Options\ModuleOptions;
+use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
+
 /**
  * Class ModuleOptionsFactory
  * @package MdjamanBlog\Factory\Options
