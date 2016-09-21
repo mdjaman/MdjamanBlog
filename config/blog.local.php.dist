@@ -10,9 +10,9 @@
  */
 return array(
     'mdjaman_blog' => array(
-        'category_entity_class' => 'Blog\Entity\Category',
-        'article_entity_class'  => 'Blog\Entity\Article',
-        'tag_entity_class'      => 'Blog\Entity\Tag',
+        'category_entity_class' => 'MdjamanBlog\Entity\Category',
+        'article_entity_class'  => 'MdjamanBlog\Entity\Article',
+        'tag_entity_class'      => 'MdjamanBlog\Entity\Tag',
         'recent_listing_limit'   => 20,
         'category_listing_limit' => 20,
         'archive_listing_limit'  => 20,
@@ -23,17 +23,17 @@ return array(
             'priority'   => '',
         ),
         'feed_generator'        => array(
-            'name'    => 'SantéFuté',
+            'name'    => 'Sitename',
             'version' => 'v0.1.0',
-            'uri'     => 'http://sante-fute.com/',
+            'uri'     => 'http://domain.com/',
         ),
         'feed_settings'         => array(
-            'title'       => 'Articles SantéFuté',
-            'description' => 'Flux RSS SantéFuté',
+            'title'       => 'Articles from domain name',
+            'description' => 'Flux RSS from domain name',
         ),
         'social_sharing' => array(
             'provider' => 'addthis',
-            'id' => 'ra-568fcb4edf555913',
+            'id' => 'ra-xxxxxxxxxxxxxxx',
             'networks' => array(
                 'facebook',
                 'twitter',
@@ -43,13 +43,13 @@ return array(
             'analytics' => array(
                 'service' => 'google',
                 'social' => true,
-                'code' => 'UA-31105807-1',
+                'code' => 'UA-xxxxxxxx-1',
             ),
         ),
         'comment_service' => array(
             'provider' => 'disqus',
-            'identifier' => 'santefute',
-            'shortname' => 'santefute',
+            'identifier' => 'xxxxxxxx',
+            'shortname' => 'xxxxxxxx',
         ),
     ),
 );
