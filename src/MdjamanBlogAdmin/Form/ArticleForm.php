@@ -25,7 +25,6 @@
 
 namespace MdjamanBlogAdmin\Form;
 
-use MdjamanBlog\Entity\Category;
 use Doctrine\Common\Persistence\ObjectManager;
 use DoctrineModule\Form\Element\ObjectSelect;
 use DoctrineModule\Stdlib\Hydrator\DoctrineObject;
@@ -48,6 +47,7 @@ class ArticleForm extends BaseForm implements ArticleFormInterface
     public function __construct(ObjectManager $om, ModuleOptionsInterface $moduleOptions)
     {
         $entityClass = $moduleOptions->getArticleEntityClass();
+        $categoryEntityClass = $moduleOptions->getCategoryEntityClass();
         parent::__construct('article', true);
         $this->setHydrator(new DoctrineObject($om))
              ->setObject(new $entityClass);
@@ -123,7 +123,7 @@ class ArticleForm extends BaseForm implements ArticleFormInterface
                 'label_attributes' => array('class' => 'col-sm-2'),
                 'empty_option' => _('-- Choix catégorie --'),
                 'object_manager' => $om,
-                'target_class' => Category::class,
+                'target_class' => $categoryEntityClass,
                 'property' => 'name',
                 'is_method' => true,
                 'find_method' => [
