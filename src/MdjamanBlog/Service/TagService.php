@@ -97,7 +97,9 @@ class TagService extends AbstractService implements TagServiceInterface
 
         switch ($filter) {
             default:
-                if (!is_null($filter) || $filter !== '') {
+                if (is_null($filter) || $filter == '') {
+                    $criteria = [];
+                } else {
                     $criteria = [$filter => $value];
                 }
                 
