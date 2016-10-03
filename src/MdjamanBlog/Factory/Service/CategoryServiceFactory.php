@@ -25,6 +25,10 @@
 
 namespace MdjamanBlog\Factory\Service;
 
+use MdjamanBlog\Service\CategoryService;
+use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
+
 /**
  * Class CategoryServiceFactory
  * @package MdjamanBlog\Factory\Service
