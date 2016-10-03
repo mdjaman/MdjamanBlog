@@ -42,8 +42,11 @@ class TagFormFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $om = $serviceLocator->get('doctrine.entitymanager.orm_default');
-        $form = new TagForm($om);
-        $form->setInputFilter(new TagFilter());
+        /* @var $options ModuleOptionsInterface */
+        $options = $serviceLocator->get('MdjamanBlog\Options\ModuleOptions');
+        $filter = $serviceLocator->get('MdjamanBlogAdmin\Filter\Tag');
+        $form = new TagForm($om, $options);
+        $form->setInputFilter($filter);
         
         return $form;
     }

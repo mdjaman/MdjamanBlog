@@ -4,6 +4,10 @@
  */
 return array(
     'service_manager' => array(
+        'invokables' => array(
+            'MdjamanBlogAdmin\Filter\Category'          => \MdjamanBlogAdmin\Form\Filter\CategoryFilter::class,
+            'MdjamanBlogAdmin\Filter\Tag'               => \MdjamanBlogAdmin\Form\Filter\TagFilter::class,
+        ),
         'factories' => array(
             'MdjamanBlog\Options\ModuleOptions'         => \MdjamanBlog\Factory\Options\ModuleOptionsFactory::class,
             'MdjamanBlog\Options\SocialSharingOptions'  => \MdjamanBlog\Factory\Options\SocialSharingOptionsFactory::class,

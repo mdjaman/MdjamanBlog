@@ -26,7 +26,6 @@
 namespace MdjamanBlogAdmin\Factory\Form;
 
 use MdjamanBlogAdmin\Form\CategoryForm;
-use MdjamanBlogAdmin\Form\Filter\CategoryFilter;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -43,9 +42,12 @@ class CategoryFormFactory implements FactoryInterface
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $om = $serviceLocator->get('doctrine.entitymanager.orm_default');
-        $form = new CategoryForm($om);
-        $form->setInputFilter(new CategoryFilter());
-        
+        /* @var $options ModuleOptionsInterface */
+        $options = $serviceLocator->get('MdjamanBlog\Options\ModuleOptions');
+        $filter = $serviceLocator->get('MdjamanBlogAdmin\Filter\Category');
+
+        $form = new CategoryForm($om, $options);
+        $form->setInputFilter($filter);
         return $form;
     }
 
