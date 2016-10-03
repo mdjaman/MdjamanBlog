@@ -25,11 +25,15 @@
 
 namespace MdjamanBlogAdmin\Factory\Form;
 
+use MdjamanBlogAdmin\Form\TagForm;
+use Zend\ServiceManager\FactoryInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
+
 /**
  * Class TagFormFactory
  * @package MdjamanBlogAdmin\Factory\Form
  */
-class TagFormFactory implements FactoryInterface 
+class TagFormFactory implements FactoryInterface
 {
     /**
      * @param ServiceLocatorInterface $serviceLocator
