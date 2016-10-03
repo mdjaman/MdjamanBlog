@@ -141,6 +141,7 @@ $(document).ready(function () {
                 } else {
                     bootstrapTableCls.editRow(response.data);
                 }
+                utils.launchNotification('Mot-clé', response.msg, 'success');
                 $('#modal-container').modal("hide");
             },
             error: function (reponse) {

@@ -325,7 +325,8 @@ var cols = [{
     title: 'Titre'
 }, {
     field: 'description',
-    title: 'Description'
+    title: 'Description',
+    formatter: contentFormatter
 }, {
     field: 'category',
     title: 'Catégorie',
@@ -358,6 +359,16 @@ function booleanFormatter(value) {
     }
     
     return 'non';
+}
+
+function contentFormatter(value) {
+    var unescaped = _.unescape(value);
+    var stripTags = unescaped.replace(/(<([^>]+)>)/ig,"");
+    var html = $('<div />', {
+        class: 'read-more',
+        html: stripTags
+    });
+    return html.prop('outerHTML');
 }
 
 function dateFormatter(value) {
@@ -545,6 +556,7 @@ $(document).ready(function () {
                 } else {
                     bootstrapTableCls.editRow(response.data);
                 }
+                utils.launchNotification('Article', response.msg, 'success');
                 $('#modal-container').modal("hide");
             },
             error: function (reponse) {

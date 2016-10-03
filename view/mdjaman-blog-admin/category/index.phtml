@@ -70,7 +70,9 @@ var cols = [{
 ];
 
 $(document).ready(function () {
-    var bootstrapTableCls = new MyBootstrapTable($("#document-table"), "<?php echo $this->url("zfcadmin/mdjaman-blog/category"); ?>", cols);
+    var uri = new URI(window.location.href);
+    var dataUrl = uri.pathname() + uri.search();
+    var bootstrapTableCls = new MyBootstrapTable($("#document-table"), dataUrl, cols);
     bootstrapTableCls.init();
     
     $('#btn-add').click(function (e) {
@@ -96,7 +98,7 @@ $(document).ready(function () {
         var id = $(this).parents('tr').data("id");
         var rowData = bootstrapTableCls.getRow(id);
 
-        utils.launchModal($("#form-delete-template").html(), 'Catégorie "' + rowData.name + '"');
+        utils.launchModal($("#form-delete-template").html(), 'Rubrique "' + rowData.name + '"');
 
         $("#confirmModalNo").on('click', function () {
             $('#modal-container').modal("hide");
@@ -148,6 +150,7 @@ $(document).ready(function () {
                 } else {
                     bootstrapTableCls.editRow(response.data);
                 }
+                utils.launchNotification('Rubrique', response.msg, 'success');
                 $('#modal-container').modal("hide");
             },
             error: function (reponse) {
