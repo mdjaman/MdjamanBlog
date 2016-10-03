@@ -63,12 +63,12 @@ var cols = [{
 ];
 
 $(document).ready(function () {
-    var bootstrapTableCls = new MyBootstrapTable($("#document-table"), "<?php echo $this->url("zfcadmin/mdjaman-blog/tag"); ?>", cols);
+    var bootstrapTableCls = new MyBootstrapTable($("#document-table"), "<?php echo $this->url("zfcadmin/blog/tag"); ?>", cols);
     bootstrapTableCls.init();
     
     $('#btn-add').click(function (e) {
         utils.launchModal($("#form-template").html(), 'Ajouter mot-clé');
-        $("#form-entity").attr("action", "<?php echo $this->url("zfcadmin/mdjaman-blog/tag/add"); ?>");
+        $("#form-entity").attr("action", "<?php echo $this->url("zfcadmin/blog/tag/add"); ?>");
         $("#form-entity").data("method-action", "add");
     });
     
@@ -97,7 +97,7 @@ $(document).ready(function () {
         $("#confirmModalYes").on('click', function (e) {
             $.ajax({
                 type: "POST",
-                url: "<?php echo $this->basePath("admin/mdjaman-blog/tag"); ?>/" + id + "/_delete",
+                url: "<?php echo $this->basePath("admin/blog/tag"); ?>/" + id + "/_delete",
                 cache: false,
                 dataType: "json",
                 data: {
